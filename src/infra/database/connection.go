@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 	"os"
 
@@ -11,22 +12,27 @@ import (
 )
 
 func Connect() (*sql.DB, error) {
-	// Obter as variáveis de ambiente
-	dbHost := os.Getenv("DB_HOST")
-	dbUser := os.Getenv("DB_USER")
-	dbPassword := os.Getenv("DB_PASSWORD")
-	dbName := os.Getenv("DB_NAME")
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("Erro ao carregar o arquivo .env: %v", err)
+	}
 
-	// Montar a string de conexão
+	dbHost := os.Getenv("POSTGRES_HOST")
+	dbUser := os.Getenv("POSTGRES_USER")
+	dbPassword := os.Getenv("POSTGRES_PASSWORD")
+	dbName := os.Getenv("POSTGRES_NAME")
+
+	if dbHost == "" || dbUser == "" || dbPassword == "" || dbName == "" {
+		log.Fatalf("Erro: uma ou mais variáveis de ambiente não estão configuradas corretamente")
+	}
+
 	connectionStr := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=5432 sslmode=disable", dbHost, dbUser, dbPassword, dbName)
 
-	// Abrir a conexão com o banco de dados
 	db, err := sql.Open("postgres", connectionStr)
 	if err != nil {
 		return nil, fmt.Errorf("erro ao conectar no banco de dados: %v", err)
 	}
 
-	// Testar a conexão com o banco de dados
 	if err = db.Ping(); err != nil {
 		return nil, fmt.Errorf("DB Ping Failed: %v", err)
 	}

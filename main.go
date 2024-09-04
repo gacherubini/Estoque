@@ -3,14 +3,11 @@ package main
 import (
 	"estoque/src/application/api"
 	"estoque/src/infra/database"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 )
 
 func main() {
-	fmt.Println("Iniciando o servidor Rest com Go")
-
 	db, err := database.Connect()
 	if err != nil {
 		log.Fatalf("Falha ao conectar ao banco de dados: %v", err)
